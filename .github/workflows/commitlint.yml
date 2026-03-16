@@ -1,0 +1,51 @@
+name: Lint Commits
+
+# Why this exists:
+#   The local husky hook enforces conventional commits for repo maintainers,
+#   but external contributors who open pull requests will not have husky
+#   installed. This workflow validates every commit on every PR so the
+#   standard is enforced consistently regardless of how the contributor
+#   has their local environment set up.
+#
+# What it checks:
+#   Every commit in the PR (from the base branch to HEAD) must conform to
+#   the Conventional Commits spec as configured in commitlint.config.js.
+#
+# Further reading:
+#   https://www.conventionalcommits.org
+#   https://github.com/conventional-changelog/commitlint
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  commitlint:
+    name: Validate commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch the full history between the base and head of the PR so
+          # commitlint can validate every commit, not just the latest one.
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate PR commits
+        run: |
+          npx commitlint \
+            --from ${{ github.event.pull_request.base.sha }} \
+            --to ${{ github.event.pull_request.head.sha }} \
+            --verbose

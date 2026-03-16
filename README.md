@@ -284,6 +284,62 @@ before submitting a pull request.
 This project deliberately avoids dependencies on the frontend. Please do not
 submit PRs that introduce a frontend framework or build step.
 
+### Commit messages
+
+This repository uses [Conventional Commits](https://www.conventionalcommits.org/).
+All commit messages must follow the format:
+
+```
+<type>(<optional scope>): <subject>
+
+<optional body>
+
+<optional footer>
+```
+
+**Allowed types:**
+
+| Type | When to use |
+|------|-------------|
+| `feat` | A new feature |
+| `fix` | A bug fix |
+| `docs` | Documentation only changes |
+| `style` | Formatting, whitespace — no logic change |
+| `refactor` | Code change that is neither a fix nor a feature |
+| `perf` | Performance improvement |
+| `test` | Adding or correcting tests |
+| `build` | Build system or dependency changes |
+| `ci` | CI/CD configuration changes |
+| `chore` | Maintenance tasks, tooling |
+| `revert` | Reverts a previous commit |
+| `security` | Security hardening or vulnerability patches |
+
+**Examples:**
+
+```
+feat: add optional passphrase protection for notes
+fix: prevent IV reuse on concurrent note creation
+docs: document reverse proxy configuration
+security: replace in-memory rate limiter with Redis-backed implementation
+chore: update redis client to v5
+```
+
+**Enforcement:**
+
+- **Locally** — [husky](https://typicode.github.io/husky/) runs
+  [commitlint](https://commitlint.js.org/) as a `commit-msg` git hook. It is
+  installed automatically when you run `npm install` (via the `prepare` script).
+- **In CI** — the `Lint Commits` GitHub Actions workflow validates every commit
+  in every pull request. PRs with non-conforming commits will fail the check.
+
+**Why conventional commits?**
+
+Conventional commits make the changelog machine-readable, allow automated
+semantic versioning (`feat` → minor bump, `fix` → patch bump), and force
+commit messages to communicate intent rather than just describing the diff.
+They also make it easier for contributors to understand the history of a
+security-sensitive project like this one.
+
 ---
 
 ## License

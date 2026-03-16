@@ -1,0 +1,7 @@
+services:
+  app:
+    volumes:
+      - ./server:/app/server
+      - ./public:/app/public
+    command: bun run --hot server/index.ts
+    restart: "no"

@@ -1,9 +1,11 @@
 import { createClient } from "redis";
+import { watch } from "fs";
 
 // ---------------------------------------------------------------------------
 // Configuration
 // ---------------------------------------------------------------------------
 
+const IS_DEV = process.env.NODE_ENV !== "production";
 const PORT = Number(process.env.PORT ?? 3000);
 const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
 const MAX_NOTE_BYTES = Number(process.env.MAX_NOTE_BYTES ?? 102_400);
@@ -45,6 +47,25 @@ const redis = createClient({ url: REDIS_URL });
 redis.on("error", (err) => console.error("[redis]", err));
 await redis.connect();
 console.log("[redis] connected");
+
+// ---------------------------------------------------------------------------
+// Dev live-reload (SSE)
+// ---------------------------------------------------------------------------
+
+const reloadClients = new Set<ReadableStreamDefaultController<string>>();
+
+if (IS_DEV) {
+  watch(PUBLIC_DIR, { recursive: true }, () => {
+    for (const ctrl of reloadClients) {
+      try {
+        ctrl.enqueue("data: reload\n\n");
+      } catch {
+        reloadClients.delete(ctrl);
+      }
+    }
+  });
+  console.log("[dev] watching public/ for changes");
+}
 
 // ---------------------------------------------------------------------------
 // In-memory rate limiter
@@ -93,9 +114,21 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-function staticFile(path: string): Response {
+async function staticFile(path: string): Promise<Response> {
   const ext = path.substring(path.lastIndexOf(".")) || "";
   const file = Bun.file(`${PUBLIC_DIR}${path}`);
+
+  if (IS_DEV && ext === ".html") {
+    const html = await file.text();
+    const injected = html.replace(
+      "</body>",
+      `<script>new EventSource("/__dev_reload").onmessage=()=>location.reload();</script>\n</body>`,
+    );
+    return new Response(injected, {
+      headers: { ...SECURITY_HEADERS, "Content-Type": MIME[ext] },
+    });
+  }
+
   return new Response(file, {
     headers: {
       ...SECURITY_HEADERS,
@@ -184,6 +217,23 @@ const server = Bun.serve({
     const { pathname } = url;
     const { method } = req;
 
+    // Dev live-reload SSE endpoint
+    if (IS_DEV && method === "GET" && pathname === "/__dev_reload") {
+      const stream = new ReadableStream<string>({
+        start(ctrl) {
+          reloadClients.add(ctrl);
+          req.signal.addEventListener("abort", () => reloadClients.delete(ctrl));
+        },
+      });
+      return new Response(stream, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "Connection": "keep-alive",
+        },
+      });
+    }
+
     // POST /api/notes — create an encrypted note
     if (method === "POST" && pathname === "/api/notes") {
       const ip = getClientIp(req, server);
@@ -205,17 +255,17 @@ const server = Bun.serve({
     // Serve the note view page for any /note/:uuid path.
     // The actual note ID and decryption key are handled entirely client-side.
     if (method === "GET" && /^\/note\/[^/]+$/.test(pathname)) {
-      return staticFile("/note.html");
+      return await staticFile("/note.html");
     }
 
     // Static assets
     if (method === "GET") {
       if (pathname === "/" || pathname === "/index.html") {
-        return staticFile("/index.html");
+        return await staticFile("/index.html");
       }
       const ext = pathname.includes(".") ? pathname.substring(pathname.lastIndexOf(".")) : "";
       if (ext && MIME[ext]) {
-        return staticFile(pathname);
+        return await staticFile(pathname);
       }
     }
 

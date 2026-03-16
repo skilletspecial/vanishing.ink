@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Share passwords and secrets via a link that self-destructs after one view." />
+  <title>vanishing.ink</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>vanishing.ink</h1>
+      <p class="tagline">End-to-end encrypted notes that self-destruct after one view.</p>
+    </header>
+
+    <section id="create-section">
+      <form id="create-form" novalidate>
+        <div class="field">
+          <label for="note-text">Secret</label>
+          <textarea
+            id="note-text"
+            placeholder="Paste a password, API key, or any sensitive text…"
+            rows="7"
+            spellcheck="false"
+            autocomplete="off"
+            required
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="ttl">Expires</label>
+          <select id="ttl">
+            <option value="3600">After 1 hour</option>
+            <option value="86400" selected>After 24 hours</option>
+            <option value="604800">After 7 days</option>
+          </select>
+        </div>
+
+        <p class="hint">
+          The note is encrypted in your browser before it is sent. The server
+          never sees the plaintext. The link is destroyed after it is opened
+          once, or when it expires — whichever comes first.
+        </p>
+
+        <button type="submit">Generate secret link</button>
+      </form>
+
+      <div id="error-banner" class="banner banner--error" hidden>
+        <span id="error-text"></span>
+      </div>
+    </section>
+
+    <section id="result-section" hidden>
+      <p class="result-label">Your secret link</p>
+      <div class="copy-row">
+        <input type="text" id="result-url" readonly aria-label="Secret link" />
+        <button id="copy-btn" type="button">Copy</button>
+      </div>
+      <p class="hint">
+        The decryption key is embedded in the link after the <code>#</code>.
+        Treat this link like the secret itself — anyone who has it can read the
+        note once.
+      </p>
+      <button id="new-btn" type="button" class="btn-ghost">Create another</button>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

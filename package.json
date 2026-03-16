@@ -1,0 +1,12 @@
+{
+  "name": "vanishing-ink",
+  "version": "1.0.0",
+  "description": "Self-destructing, end-to-end encrypted secret sharing",
+  "scripts": {
+    "dev": "bun run --hot server/index.ts",
+    "start": "bun run server/index.ts"
+  },
+  "dependencies": {
+    "redis": "^4.7.0"
+  }
+}

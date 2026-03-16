@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="View your encrypted note." />
+  <title>vanishing.ink — View note</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <a href="/" class="logo" aria-label="vanishing.ink home">vanishing.ink</a>
+    </header>
+
+    <!-- Shown while fetching + decrypting -->
+    <section id="loading-section" aria-live="polite">
+      <p class="muted">Retrieving note…</p>
+    </section>
+
+    <!-- Shown after successful decryption -->
+    <section id="note-section" hidden>
+      <div class="burn-notice" role="status">
+        <span class="burn-icon" aria-hidden="true">⚑</span>
+        This note has been destroyed. It cannot be viewed again.
+      </div>
+
+      <div class="field">
+        <label for="secret-text">Secret</label>
+        <div class="copy-row">
+          <textarea
+            id="secret-text"
+            readonly
+            rows="7"
+            spellcheck="false"
+            aria-label="Decrypted secret"
+          ></textarea>
+          <button id="copy-btn" type="button">Copy</button>
+        </div>
+      </div>
+
+      <button id="clear-btn" type="button" class="btn-ghost btn-danger">
+        Clear from screen
+      </button>
+    </section>
+
+    <!-- Shown when the note is gone (already viewed or expired) -->
+    <section id="gone-section" hidden>
+      <h2>This note no longer exists.</h2>
+      <p class="muted">
+        It has either already been viewed or has expired. Each note can only be
+        read once.
+      </p>
+      <a href="/" class="btn-link">Create a new note</a>
+    </section>
+
+    <!-- Shown on decryption failure (corrupt link) -->
+    <section id="error-section" hidden>
+      <h2>Could not decrypt this note.</h2>
+      <p class="muted" id="error-message"></p>
+      <a href="/" class="btn-link">Create a new note</a>
+    </section>
+  </main>
+
+  <script src="/view.js"></script>
+</body>
+</html>

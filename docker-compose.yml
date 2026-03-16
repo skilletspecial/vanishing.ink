@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${HOST_PORT:-4000}:3000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PORT=3000
+      - MAX_NOTE_BYTES=${MAX_NOTE_BYTES:-102400}
+      - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-10}
+      - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-3600000}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    # AOF persistence ensures notes survive a Redis restart.
+    # Notes still self-destruct via TTL — this only prevents accidental loss.
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  redis_data:

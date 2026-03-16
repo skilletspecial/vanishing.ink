@@ -1,0 +1,339 @@
+/* -------------------------------------------------------------------------
+   Reset & variables
+------------------------------------------------------------------------- */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure the HTML `hidden` attribute is never overridden by display rules */
+[hidden] { display: none !important; }
+
+:root {
+  --bg:       #0f0f0f;
+  --surface:  #181818;
+  --border:   #2a2a2a;
+  --text:     #e2ddd5;
+  --muted:    #6b6b6b;
+  --accent:   #c8a96e;   /* warm amber — evokes ink */
+  --danger:   #e05c5c;
+  --success:  #5cbf8a;
+  --radius:   6px;
+  --mono: "SF Mono", "Fira Code", "Cascadia Code", Consolas, "Courier New", monospace;
+}
+
+/* -------------------------------------------------------------------------
+   Base
+------------------------------------------------------------------------- */
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+}
+
+main {
+  width: 100%;
+  max-width: 560px;
+}
+
+/* -------------------------------------------------------------------------
+   Header
+------------------------------------------------------------------------- */
+
+header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+h1, .logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+h1::after, .logo::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-left: 4px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+.tagline {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* -------------------------------------------------------------------------
+   Form elements
+------------------------------------------------------------------------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+textarea,
+input[type="text"],
+select {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 0.7rem 0.9rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+textarea:focus,
+input[type="text"]:focus,
+select:focus {
+  border-color: var(--accent);
+}
+
+textarea {
+  font-family: var(--mono);
+  resize: vertical;
+  min-height: 140px;
+}
+
+textarea[readonly] {
+  cursor: default;
+}
+
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6b6b'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.2rem;
+}
+
+/* -------------------------------------------------------------------------
+   Buttons
+------------------------------------------------------------------------- */
+
+button[type="submit"],
+button[type="button"]:not(.btn-ghost):not(.btn-danger) {
+  background: var(--accent);
+  color: #0d0d0d;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.7rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+button[type="submit"]:hover,
+button[type="button"]:not(.btn-ghost):not(.btn-danger):hover {
+  opacity: 0.82;
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  padding: 0.6rem 1.2rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-ghost:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+
+.btn-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-danger:hover {
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+
+.btn-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------------
+   Layout helpers
+------------------------------------------------------------------------- */
+
+form,
+#result-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.copy-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.copy-row textarea,
+.copy-row input {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+}
+
+/* -------------------------------------------------------------------------
+   Text helpers
+------------------------------------------------------------------------- */
+
+.hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.result-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* -------------------------------------------------------------------------
+   Banners
+------------------------------------------------------------------------- */
+
+.banner {
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  font-size: 0.875rem;
+}
+
+.banner--error {
+  background: rgba(224, 92, 92, 0.1);
+  border: 1px solid rgba(224, 92, 92, 0.3);
+  color: var(--danger);
+}
+
+/* -------------------------------------------------------------------------
+   Burn notice (note view page)
+------------------------------------------------------------------------- */
+
+.burn-notice {
+  background: rgba(224, 92, 92, 0.08);
+  border: 1px solid rgba(224, 92, 92, 0.25);
+  border-radius: var(--radius);
+  color: var(--danger);
+  font-size: 0.85rem;
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.burn-icon {
+  font-size: 0.9rem;
+}
+
+/* -------------------------------------------------------------------------
+   Gone / error sections
+------------------------------------------------------------------------- */
+
+#gone-section,
+#error-section {
+  text-align: center;
+}
+
+#gone-section h2,
+#error-section h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+#note-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* -------------------------------------------------------------------------
+   Loading
+------------------------------------------------------------------------- */
+
+#loading-section {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--muted);
+}
+
+/* -------------------------------------------------------------------------
+   Responsive
+------------------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .copy-row {
+    flex-direction: column;
+  }
+
+  .copy-row button {
+    align-self: flex-end;
+  }
+}

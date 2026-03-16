@@ -146,14 +146,47 @@ async function init() {
     }
   });
 
-  // Clear button — removes the secret from the DOM entirely.
-  // This is a courtesy feature; it does not guarantee the OS has not
-  // already captured the value in swap or a clipboard manager.
-  document.getElementById("clear-btn").addEventListener("click", () => {
+  // clear() — removes the secret from the DOM entirely.
+  // Called either by the manual "Clear from screen" button or by the
+  // auto-clear countdown. Idempotent: safe to call more than once.
+  function clear() {
     secretText.value = "";
     secretText.placeholder = "Cleared.";
     document.getElementById("clear-btn").hidden = true;
     document.getElementById("copy-btn").hidden = true;
+    document.getElementById("auto-clear-notice").hidden = true;
+    document.getElementById("cleared-notice").hidden = false;
+  }
+
+  // Auto-clear the note 5 minutes after successful decryption.
+  // A visible countdown gives the user time to copy the secret before
+  // the screen is wiped, without leaving it exposed indefinitely.
+  const AUTO_CLEAR_SECONDS = 5 * 60;
+  const notice = document.getElementById("auto-clear-notice");
+
+  function formatCountdown(seconds) {
+    const m = Math.floor(seconds / 60).toString();
+    const s = (seconds % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  }
+
+  let remaining = AUTO_CLEAR_SECONDS;
+  notice.textContent = ` The page will be cleared in ${formatCountdown(remaining)}.`;
+
+  const countdown = setInterval(() => {
+    remaining -= 1;
+    if (remaining <= 0) {
+      clearInterval(countdown);
+      clear();
+    } else {
+      notice.textContent = ` The page will be cleared in ${formatCountdown(remaining)}.`;
+    }
+  }, 1000);
+
+  // Clear button — removes the secret from the DOM immediately.
+  document.getElementById("clear-btn").addEventListener("click", () => {
+    clearInterval(countdown);
+    clear();
   });
 }
 

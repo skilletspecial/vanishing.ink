@@ -284,13 +284,8 @@ code {
   color: var(--danger);
   font-size: 0.85rem;
   padding: 0.65rem 1rem;
-  display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.burn-icon {
-  font-size: 0.9rem;
 }
 
 /* -------------------------------------------------------------------------

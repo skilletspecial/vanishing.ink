@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="View your encrypted note." />
-  <title>vanishing.ink — View note</title>
+  <title>Vanishing Ink — Self-destructing Notes</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <main>
     <header>
-      <a href="/" class="logo" aria-label="vanishing.ink home">vanishing.ink</a>
+      <a href="/" class="logo" aria-label="vanishing ink home">Vanishing Ink</a>
     </header>
 
     <!-- Shown while fetching + decrypting -->
@@ -20,9 +20,12 @@
 
     <!-- Shown after successful decryption -->
     <section id="note-section" hidden>
-      <div class="burn-notice" role="status">
-        <span class="burn-icon" aria-hidden="true">⚑</span>
-        This note has been destroyed. It cannot be viewed again.
+      <div class="burn-notice" role="status" aria-live="polite">
+        This encrypted note has been destroyed. 
+        <span id="auto-clear-notice"></span>
+        <span id="cleared-notice" hidden>
+          It cannot be viewed again.
+        </span>
       </div>
 
       <div class="field">

@@ -6,7 +6,7 @@ import { watch } from "fs";
 // ---------------------------------------------------------------------------
 
 const IS_DEV = process.env.NODE_ENV !== "production";
-const PORT = Number(process.env.PORT ?? 3000);
+const PORT = Number(process.env.PORT ?? 80);
 const REDIS_URL = process.env.REDIS_URL ?? "redis://localhost:6379";
 const MAX_NOTE_BYTES = Number(process.env.MAX_NOTE_BYTES ?? 102_400);
 const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX ?? 10);
@@ -232,6 +232,11 @@ const server = Bun.serve({
           "Connection": "keep-alive",
         },
       });
+    }
+
+    // GET /up — health check for ONCE and load balancers
+    if (method === "GET" && pathname === "/up") {
+      return new Response("OK", { status: 200 });
     }
 
     // POST /api/notes — create an encrypted note

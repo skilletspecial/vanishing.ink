@@ -2,22 +2,32 @@ services:
   app:
     build: .
     ports:
-      - "${HOST_PORT:-4000}:3000"
+      - "80:80"
     environment:
       - REDIS_URL=redis://redis:6379
-      - PORT=3000
+      - PORT=80
       - MAX_NOTE_BYTES=${MAX_NOTE_BYTES:-102400}
       - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-10}
       - RATE_LIMIT_WINDOW_MS=${RATE_LIMIT_WINDOW_MS:-3600000}
+    # ONCE mounts /storage as a persistent volume on the host.
+    # For local development, set STORAGE_PATH=./storage or let it default.
+    volumes:
+      - ${STORAGE_PATH:-./storage}:/storage
     depends_on:
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     restart: unless-stopped
 
   redis:
     image: redis:7-alpine
     volumes:
-      - redis_data:/data
+      - ${STORAGE_PATH:-./storage}/redis:/data
     # AOF persistence ensures notes survive a Redis restart.
     # Notes still self-destruct via TTL — this only prevents accidental loss.
     command: redis-server --appendonly yes
@@ -27,6 +37,3 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
-
-volumes:
-  redis_data:

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Redis loads the restored AOF/RDB data automatically on next startup.
+# No additional steps required for vanishing.ink.
+exit 0

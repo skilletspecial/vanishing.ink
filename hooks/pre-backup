@@ -1,0 +1,12 @@
+#!/bin/sh
+# Trigger a Redis background save before ONCE takes the storage snapshot.
+# Redis AOF already persists every write continuously, but BGSAVE creates
+# a clean RDB checkpoint so the backup captures a consistent state.
+bun -e "
+import { createClient } from 'redis';
+const c = createClient({ url: process.env.REDIS_URL ?? 'redis://redis:6379' });
+c.on('error', () => {});
+await c.connect().catch(() => {});
+await c.bgSave().catch(() => {});
+await c.disconnect().catch(() => {});
+" 2>/dev/null || true

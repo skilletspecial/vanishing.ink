@@ -147,3 +147,4 @@ newBtn.addEventListener("click", () => {
   clearError();
   noteText.focus();
 });
+

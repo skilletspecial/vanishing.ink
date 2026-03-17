@@ -56,24 +56,29 @@ header {
 }
 
 h1, .logo {
-  font-size: 1.4rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   color: var(--text);
   text-decoration: none;
 }
 
 h1::after, .logo::after {
-  content: '';
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  background: var(--accent);
-  border-radius: 50%;
-  margin-left: 4px;
-  vertical-align: middle;
-  position: relative;
-  top: -1px;
+  content: none;
+}
+
+/* "Ink" rendered in amber — the one word that names the thing */
+.ink-word {
+  color: var(--accent);
+}
+
+/* Thin amber hairline beneath the title */
+.ink-trail {
+  height: 1px;
+  width: 80px;
+  margin: 10px auto 0;
+  background: linear-gradient(to right, transparent, var(--accent), transparent);
+  opacity: 0.4;
 }
 
 .tagline {

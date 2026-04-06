@@ -1,6 +1,8 @@
 services:
   app:
     build: .
+    mem_limit: 512m
+    mem_reservation: 256m
     environment:
       - REDIS_URL=redis://redis:6379
       - PORT=80

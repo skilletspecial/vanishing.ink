@@ -1,6 +1,8 @@
 services:
   app:
     build: .
+    mem_limit: 512m
+    mem_reservation: 256m
     ports:
       - "80:80"
     environment:
